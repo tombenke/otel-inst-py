@@ -10,4 +10,4 @@ on:
 
 jobs:
   qa:
-    uses: tombenke/oti-py/.github/workflows/qa.yml@master
+    uses: tombenke/otel-inst-py/.github/workflows/qa.yml@master

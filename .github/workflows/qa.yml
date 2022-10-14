@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: setup
-        uses: tombenke/oti-py/.github/actions/setup@master
+        uses: tombenke/otel-inst-py/.github/actions/setup@master
 
       - id: checkout
-        uses: tombenke/oti-py/.github/actions/checkout@master
+        uses: tombenke/otel-inst-py/.github/actions/checkout@master
 
       - name: Run coverage task
         run: task coverage
@@ -43,10 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: setup
-        uses: tombenke/oti-py/.github/actions/setup@master
+        uses: tombenke/otel-inst-py/.github/actions/setup@master
 
       - id: checkout
-        uses: tombenke/oti-py/.github/actions/checkout@master
+        uses: tombenke/otel-inst-py/.github/actions/checkout@master
 
       - name: Run lint task
         run: task lint
