@@ -1,0 +1,13 @@
+name: Quality Check
+
+on:
+  push:
+    branches:
+      - "*" # matches every branch
+      - "*/*" # matches every branch containing a single '/'
+        #      - "!ci/*" # excludes ci branches
+        #      - "!master" # excludes master
+
+jobs:
+  qa:
+    uses: tombenke/oti-py/.github/workflows/qa.yml@master
