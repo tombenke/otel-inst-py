@@ -1,7 +1,10 @@
-"""The OTI configuration module"""
+"""The OTI configuration class"""
 import dataclasses
+import uuid
 
 DEFAULT_SERVICE_NAME = "UNDEFINED_SERVICE"
+DEFAULT_SERVICE_NAMESPACE = "UNDEFINED_SERVICE_NS"
+DEFAULT_SERVICE_VERSION = "UNDEFINED_SERVICE_VERSION"
 DEFAULT_EXPORTER_TYPE = "STDOUT"  # STDOUT | OTELGRPC
 DEFAULT_SPAN_PROCESSOR_TYPE = "SIMPLE"  # SIMPLE | BATCH
 DEFAULT_OTEL_SAMPLING_TYPE = "NEVER"  # NEVER | PARENTBASED | RATIOBASED | ALWAYS
@@ -51,17 +54,27 @@ class SamplingConfig:
 
 @dataclasses.dataclass
 class OTIConfig:
-    """Configuration parameters for Open Telemetry Instrumentation"""
+    """
+    Configuration parameters for Open Telemetry Instrumentation
+
+    This class holds those configuration parameters that are most frequently used for instrumenting the OTEL SDK.
+    """
 
     def __init__(
         self,
         service_name=DEFAULT_SERVICE_NAME,
+        service_namespace=DEFAULT_SERVICE_NAMESPACE,
+        service_instance_id=f"{DEFAULT_SERVICE_NAME}_{str(uuid.uuid4())}",
+        service_version=DEFAULT_SERVICE_VERSION,
         span_processor_type=DEFAULT_SPAN_PROCESSOR_TYPE,
         exporter_config=ExporterConfig(),
         sampling_config=SamplingConfig(),
     ):
         """The Constructor of Open Telemetry Instrumentation configuration class"""
         self.service_name = service_name
+        self.service_namespace = service_namespace
+        self.service_instance_id = service_instance_id
+        self.service_version = service_version
         self.span_processor_type = span_processor_type
         self.exporter_config = exporter_config
         self.sampling_config = sampling_config

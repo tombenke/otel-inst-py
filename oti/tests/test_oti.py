@@ -3,6 +3,7 @@ import logging
 import unittest
 from unittest.mock import patch
 from io import StringIO
+from opentelemetry import trace  # Import the OTEL API
 from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
 
 import requests
@@ -39,23 +40,27 @@ class OtiTestCase(unittest.TestCase):
         )
         log = logging.getLogger("LOG")
 
+        service_name = "test_trace_otelgrpc"
         oti = OTI(
             OTIConfig(
-                service_name="simple_trace_otelgrpc",
+                service_name=service_name,
+                service_namespace="examples",
+                service_instance_id="stot_42",
+                service_version="v1.0.0",
                 exporter_config=ExporterConfig(exporter_type="OTELGRPC"),
                 sampling_config=SamplingConfig(trace_sampling_type="ALWAYS"),
             )
         )
+        tracer = trace.get_tracer(__name__)
         trace_id = None
-        with oti.tracer.start_as_current_span("span-name") as span:
+        with tracer.start_as_current_span("span-name") as span:
             # do some work that 'span' will track
             trace_id = str(hex(span.get_span_context().trace_id)[2:])
             log.debug(f"TRACER / SPAN is executed: {trace_id}")
             # When the 'with' block goes out of scope, 'span' is closed for you
 
         oti.shutdown()
-        traces = fetch_traces_by_service("unknown_service")
+        traces = fetch_traces_by_service(service_name)
         log.debug(traces)
-        trace = traces["data"][0]
-        # self.assertEqual(trace_id, trace["traceID"])
-        self.assertEqual("span-name", trace["spans"][0]["operationName"])
+        trace_0 = traces["data"][0]
+        self.assertEqual("span-name", trace_0["spans"][0]["operationName"])

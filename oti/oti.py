@@ -1,6 +1,6 @@
 """The OTI class"""
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace import TracerProvider, Resource
 from opentelemetry.sdk.trace.export import (
     SimpleSpanProcessor,
     BatchSpanProcessor,
@@ -19,6 +19,10 @@ from .config import OTIConfig
 class OTI:
     """
     Class for Open Telemetry Instrumentation
+
+    This is a wrapper for insrtumenting the OTEL SDK for an application.
+    It imports the OTEL SDK, and initializes a global tracer.
+    It uses the most important configuration parameters, e.g. `service.name`, etc.
     """
 
     def __init__(self, config=OTIConfig()):
@@ -26,6 +30,7 @@ class OTI:
 
         print(config)
         # Create exporter(s)
+        self.config = config
         span_exporter = self.setup_exporter(config)
 
         # Create a global Tracer Provider
@@ -43,7 +48,15 @@ class OTI:
     def setup_global_tracer_provider(self, config, span_exporter):
         """Setup the global trace provider according to the config parameters"""
         self.tracer_provider = TracerProvider(
-            self.setup_sampler(config.sampling_config)
+            self.setup_sampler(config.sampling_config),
+            resource=Resource.create(
+                {
+                    "service.name": self.config.service_name,
+                    "service.namespace": self.config.service_namespace,
+                    "service.instance.id": self.config.service_instance_id,
+                    "service.version": self.config.service_version,
+                }
+            ),
         )
 
         self.tracer_provider.add_span_processor(

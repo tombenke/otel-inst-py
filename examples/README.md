@@ -1,7 +1,7 @@
 examples
 ========
 
-This repo contains examples for tracing.
+This directory contains examples for tracing.
 
 ## Usage
 

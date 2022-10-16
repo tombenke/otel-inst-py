@@ -10,6 +10,8 @@ otel-inst-py
 Python package that provides the basic features required for Open-Telemetry instrumentation.
 It makes easier the manual instrumentation of a python application.
 
+See also the [API docs](https://tombenke.github.io/otel-inst-py/) of the package.
+
 ### Prerequisites
 
 You will need the following tools installed on your machine:

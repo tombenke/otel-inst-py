@@ -104,7 +104,7 @@ tasks:
     desc: Generate module documentation into the docs/ folder
     cmds:
       - echo {{.VERSION}}
-      - pdoc -o docs oti/ --footer-text="otel-inst-py/oti {{.VERSION}}"
+      - pdoc -o docs oti/ examples/ --footer-text="otel-inst-py/oti {{.VERSION}}"
 
   clean:
     desc: Clean temporary files and folders
