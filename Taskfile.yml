@@ -33,7 +33,19 @@ tasks:
       - task: format
       - task: dc-upd
       - python -m unittest discover ./oti/tests/
+      - task: run_examples
       - task: dc-down
+
+  run_examples:
+    desc: Run the examples
+    cmds:
+      - cd examples && python simple_trace_otlpgrpc_env.py
+      - cd examples && python simple_trace_otlpgrpc.py
+      - cd examples && python simple_trace_otlphttp_env.py
+      - cd examples && python simple_trace_stdout_default_config.py
+      - cd examples && python simple_trace_stdout_env.py
+      - cd examples && python simple_trace_stdout.py
+      - cd examples && python simple_trace_stdout_wo_sdk.py
 
   test-verbose:
     desc: Run all the go tests.
@@ -58,6 +70,8 @@ tasks:
     cmds:
       - task: format
       - pylint oti/
+      - pylint oti/tests/
+      - pylint examples/
 
   build:
     desc: Build
@@ -104,7 +118,9 @@ tasks:
     desc: Generate module documentation into the docs/ folder
     cmds:
       - echo {{.VERSION}}
-      - pdoc -o docs oti/ examples/ --footer-text="otel-inst-py/oti {{.VERSION}}"
+      - task: dc-upd
+      - pdoc -o docs -d google oti/ examples/ --footer-text="otel-inst-py/oti {{.VERSION}}"
+      - task: dc-down
 
   clean:
     desc: Clean temporary files and folders

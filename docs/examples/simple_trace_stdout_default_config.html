@@ -29,7 +29,7 @@
 
 
 
-            <footer>otel-inst-py/oti a36358c</footer>
+            <footer>otel-inst-py/oti c4ff1a3</footer>
 
         <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev" target="_blank">
             built with <span class="visually-hidden">pdoc</span><img
@@ -43,16 +43,7 @@
                     <h1 class="modulename">
 <a href="./../examples.html">examples</a><wbr>.simple_trace_stdout_default_config    </h1>
 
-                        <div class="docstring"><p>This example uses the <code>OTIConfig</code> with default values.</p>
-
-<p>The program uses the tracing API, but there is no trace exported to gRPC
-neither to <code>stdout</code> because the corresponding default config values are:</p>
-
-<div class="pdoc-code codehilite">
-<pre><span></span><code><span class="nv">DEFAULT_EXPORTER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;STDOUT&quot;</span>
-<span class="nv">DEFAULT_OTEL_SAMPLING_TYPE</span> <span class="o">=</span> <span class="s2">&quot;NEVER&quot;</span>
-</code></pre>
-</div>
+                        <div class="docstring"><p>This example uses the tracing API and instruments the OTI with the default config values.</p>
 </div>
 
                         <input id="mod-simple_trace_stdout_default_config-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
@@ -60,34 +51,25 @@ neither to <code>stdout</code> because the corresponding default config values a
                         <label class="view-source-button" for="mod-simple_trace_stdout_default_config-view-source"><span>View Source</span></label>
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">This example uses the `OTIConfig` with default values.</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="sd">The program uses the tracing API, but there is no trace exported to gRPC</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">neither to `stdout` because the corresponding default config values are:</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">This example uses the tracing API and instruments the OTI with the default config values.</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">trace</span>  <span class="c1"># Import the OTEL API</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span> <span class="nn">oti</span> <span class="kn">import</span> <span class="n">OTI</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">```bash</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">DEFAULT_EXPORTER_TYPE = &quot;STDOUT&quot;</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">DEFAULT_OTEL_SAMPLING_TYPE = &quot;NEVER&quot;</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="sd">```</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">trace</span>  <span class="c1"># Import the OTEL API</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span> <span class="nn">oti</span> <span class="kn">import</span> <span class="n">OTI</span><span class="p">,</span> <span class="n">OTIConfig</span><span class="p">,</span> <span class="n">ExporterConfig</span><span class="p">,</span> <span class="n">SamplingConfig</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="c1"># Configure the OTEL SDK</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="n">oti</span> <span class="o">=</span> <span class="n">OTI</span><span class="p">()</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="c1"># Configure the OTEL SDK</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">oti</span> <span class="o">=</span> <span class="n">OTI</span><span class="p">()</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="c1"># Use the OTEL via API only without the OTI (SDK instrumentation)</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">tracer</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="k">with</span> <span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span><span class="s2">&quot;the-main-span-of-the-example&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">span</span><span class="p">:</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="c1"># do some work that &#39;span&#39; will track</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="k">if</span> <span class="n">span</span><span class="o">.</span><span class="n">is_recording</span><span class="p">():</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>        <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;This note should appear as a span attribute.&quot;</span><span class="p">)</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TRACER / SPAN is executed: </span><span class="si">{</span><span class="n">span</span><span class="o">.</span><span class="n">get_span_context</span><span class="p">()</span><span class="o">.</span><span class="n">trace_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="c1"># When the &#39;with&#39; block goes out of scope, &#39;span&#39; is closed for you</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="c1"># Use the OTEL via API only</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="n">tracer</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="k">with</span> <span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span><span class="s2">&quot;the-main-span-of-the-example&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">span</span><span class="p">:</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="c1"># do some work that &#39;span&#39; will track</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="k">if</span> <span class="n">span</span><span class="o">.</span><span class="n">is_recording</span><span class="p">():</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;This note never should appear!&#39;</span><span class="p">)</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TRACER / SPAN is executed: </span><span class="si">{</span><span class="n">span</span><span class="o">.</span><span class="n">get_span_context</span><span class="p">()</span><span class="o">.</span><span class="n">trace_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="c1"># When the &#39;with&#39; block goes out of scope, &#39;span&#39; is closed for you</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="c1"># Shut down the OTEL SDK</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="n">oti</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="c1"># Shut down the OTEL SDK</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="n">oti</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </span></pre></div>
 
 

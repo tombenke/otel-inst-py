@@ -1,14 +1,10 @@
 """Test the oti module"""
 import logging
 import unittest
-from unittest.mock import patch
-from io import StringIO
-from opentelemetry import trace  # Import the OTEL API
-from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
-
-import requests
-import sys
 import time
+from opentelemetry import trace  # Import the OTEL API
+import requests
+from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
 
 
 def fetch_traces_by_service(service):
@@ -18,11 +14,12 @@ def fetch_traces_by_service(service):
     num_of_retries = 4
     time_interval = 0.5
     for _ in range(num_of_retries):
-        with requests.get(trace_url) as response:
+        with requests.get(trace_url, timeout=1) as response:
             content = response.json()
-            if content["errors"] == None and len(content["data"]) > 0:
+            if content["errors"] is None and len(content["data"]) > 0:
                 return content
             time.sleep(time_interval)
+    return None
 
 
 class OtiTestCase(unittest.TestCase):
@@ -47,8 +44,14 @@ class OtiTestCase(unittest.TestCase):
                 service_namespace="examples",
                 service_instance_id="stot_42",
                 service_version="v1.0.0",
-                exporter_config=ExporterConfig(exporter_type="OTELGRPC"),
-                sampling_config=SamplingConfig(trace_sampling_type="ALWAYS"),
+                # exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
+                exporter_config=ExporterConfig(
+                    exporter_type="OTLPHTTP",
+                    exporter_url="http://localhost:4318/v1/traces",
+                ),
+                sampling_config=SamplingConfig(
+                    trace_sampling_type="PARENTBASED_ALWAYS_ON"
+                ),
             )
         )
         tracer = trace.get_tracer(__name__)
@@ -56,7 +59,7 @@ class OtiTestCase(unittest.TestCase):
         with tracer.start_as_current_span("span-name") as span:
             # do some work that 'span' will track
             trace_id = str(hex(span.get_span_context().trace_id)[2:])
-            log.debug(f"TRACER / SPAN is executed: {trace_id}")
+            log.debug("TRACER / SPAN is executed: %s", trace_id)
             # When the 'with' block goes out of scope, 'span' is closed for you
 
         oti.shutdown()

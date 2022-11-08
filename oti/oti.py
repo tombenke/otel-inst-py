@@ -6,7 +6,13 @@ from opentelemetry.sdk.trace.export import (
     BatchSpanProcessor,
     ConsoleSpanExporter,
 )
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+    OTLPSpanExporter as OTLPGRPCSpanExporter,
+)
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
+    OTLPSpanExporter as OTLPHTTPSpanExporter,
+)
 from opentelemetry.sdk.trace.sampling import (
     ALWAYS_OFF,
     ALWAYS_ON,
@@ -28,7 +34,6 @@ class OTI:
     def __init__(self, config=OTIConfig()):
         """Constructor of the Open Telemetry instrumentation object"""
 
-        print(config)
         # Create exporter(s)
         self.config = config
         span_exporter = self.setup_exporter(config)
@@ -40,9 +45,6 @@ class OTI:
         self.tracer = trace.get_tracer(__name__)
 
         # Create a global Meter Provider
-        # TO DO
-
-        # Create global Propagator
         # TO DO
 
     def setup_global_tracer_provider(self, config, span_exporter):
@@ -84,8 +86,12 @@ class OTI:
         exporter_type = config.exporter_config.exporter_type.upper()
         if exporter_type == "STDOUT":
             return ConsoleSpanExporter(service_name=config.service_name)
-        if exporter_type == "OTELGRPC":
-            return OTLPSpanExporter()
+        if exporter_type == "OTLPGRPC":
+            return OTLPGRPCSpanExporter(
+                endpoint=config.exporter_config.exporter_url, insecure=True
+            )
+        if exporter_type == "OTLPHTTP":
+            return OTLPHTTPSpanExporter(endpoint=config.exporter_config.exporter_url)
 
         raise Exception(
             f'Unknown OTEL span exporter type: "{config.exporter_config.exporter_type}"'
@@ -95,14 +101,25 @@ class OTI:
         """Setup the trace sampler according to the config parameters"""
         sampling_type = sampling_config.trace_sampling_type.upper()
 
-        print(f"sampling_type: {sampling_type}")
-        if sampling_type == "NEVER":
+        if sampling_type == "ALWAYS_OFF":
+            # "always_off": AlwaysOffSampler
             return ALWAYS_OFF
-        if sampling_type == "ALWAYS":
+        if sampling_type == "ALWAYS_ON":
+            # "always_on": AlwaysOnSampler
             return ALWAYS_ON
-        if sampling_type == "PARENTBASED":
-            return ParentBased(None)
-        if sampling_type == "RATIOBASED":
+        if sampling_type == "PARENTBASED_ALWAYS_ON":
+            # "parentbased_always_on": ParentBased(root=AlwaysOnSampler)
+            return ParentBased(root=ALWAYS_ON)
+        if sampling_type == "PARENTBASED_ALWAYS_OFF":
+            # "parentbased_always_off": ParentBased(root=AlwaysOffSampler)
+            return ParentBased(root=ALWAYS_OFF)
+        if sampling_type == "PARENTBASED_TRACEID_RATIO":
+            # "parentbased_traceidratio": ParentBased(root=TraceIdRatioBased)
+            return ParentBased(
+                root=TraceIdRatioBased(sampling_config.trace_sampling_ratio)
+            )
+        if sampling_type == "TRACEIDRATIO":
+            # "traceidratio": TraceIdRatioBased
             return TraceIdRatioBased(sampling_config.trace_sampling_ratio)
 
         raise Exception(

@@ -14,9 +14,9 @@ oti = OTI(
         service_name="simple_trace_stdout",
         service_namespace="examples",
         service_instance_id="st_42",
-        service_version="v1.0.0",
+        service_version="v1.2.3",
         exporter_config=ExporterConfig(exporter_type="STDOUT"),
-        sampling_config=SamplingConfig(trace_sampling_type="ALWAYS"),
+        sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
     )
 )
 

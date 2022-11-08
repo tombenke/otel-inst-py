@@ -10,7 +10,63 @@ otel-inst-py
 Python package that provides the basic features required for Open-Telemetry instrumentation.
 It makes easier the manual instrumentation of a python application.
 
-See also the [API docs](https://tombenke.github.io/otel-inst-py/) of the package.
+## Usage
+
+### Installation
+
+Install the [`otel-inst-py`](https://pypi.org/project/otel-inst-py/) package with pip, or add it to the requirements.txt or setup.py of your program.
+
+### Configuration
+
+Instantiate the `OTI()` class either with the `OTIConfig()` configuration or via environment variables.
+
+The following code shows the instrumentation using the config objects:
+
+```python
+from opentelemetry import trace  # Import the OTEL API
+from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
+
+# Configure the OTEL SDK
+oti = OTI(
+    OTIConfig(
+        service_name="simple_trace_otelgrpc",
+        service_namespace="examples",
+        service_instance_id="stot_42",
+        service_version="v1.0.0",
+        exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
+        sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+    )
+)
+
+# Use the OTEL via API only
+tracer = trace.get_tracer(__name__)
+with tracer.start_as_current_span("simple-trace-example") as span:
+    # do some work that 'span' will track
+    TRACE_ID = str(hex(span.get_span_context().trace_id)[2:])
+    print(f"TRACER / SPAN is executed: {TRACE_ID}")
+    # When the 'with' block goes out of scope, 'span' is closed for you
+
+# Shut down the OTEL SDK
+oti.shutdown()
+```
+
+Before exit, execute the `oti.shutdown()` that makes sure that the traces and metrics will surely be exported befor termination.
+
+It is also possible to use envrionment variables to configure the `OTI()` class within the following variables:
+
+- `OTEL_SERVICE_NAME`: The name of the service. default: `"UNDEFINED_SERVICE"`.
+- `OTEL_SERVICE_VERSION`: The version of the service. Default: `"UNDEFINED_SERVICE_VERSION"`.
+- `OTEL_SERVICE_NAMESPACE`: The service namespace. Default: `"UNDEFINED_SERVICE_NS"`.
+- `OTEL_EXPORTER_TYPE`:  The type of the exporter. One of: `"STDOUT" | "OTLPRPC | OTLPHTTP"`. Default: `"STDOUT"`.
+- `OTEL_EXPORTER_URL`: The URL of the collector agent or service. Default: `"http://localhost:4317"`.
+- `OTEL_SPAN_PROCESSOR_TYPE`: The type of the span processor. One of: `"SIMPLE" | "BATCH"`. Default `"SIMPLE"`.
+- `OTEL_TRACES_SAMPLER`: The sampling type of tracing. One of: `"ALWAYS_OFF" | "ALWAYS_ON" | "TRACEIDRATIO" | "PARENTBASED" | "PARENTBASED_ALWAYS_OFF" | "PARENTBASED_ALWAYS_ON" | "PARENTBASED_TRACEIDRATIO"`. Default: `"PARENTBASED_ALWAYS_ON"`.
+- `OTEL_TRACES_SAMPLER_ARG`: It is used, of the `OTEL_TRACES_SAMPLER` config parameter has one of the `"...RATIO"` values. Default: `"1.0"`.
+
+Read the [API docs](https://tombenke.github.io/otel-inst-py/) on the configuration,
+and see also the [examples](examples/) on the usage of this package.
+
+## Development
 
 ### Prerequisites
 
@@ -83,10 +139,6 @@ task: Available tasks for this project:
 * test-verbose: 	Run all the go tests.
 * venv-create: 		Create a new Python Virtual Environment under the local folder
 ```
-
-## Examples
-
-See the [examples](examples/) on the usage of this package.
 
 ## License
 The scripts and documentation in this project are released under the [MIT License](LICENSE)

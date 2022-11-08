@@ -12,7 +12,7 @@ services:
       - "14250:14250" # The gRPC port for the collector service
     #  - "5778:5778"   # Agent config HTTP
     #  - "4317:4317"   # OTLP Receiver gRPC port
-    #  - "4318:4318"   # OTLP Receiver HTTP port
+      - "4318:4318"   # OTLP Receiver HTTP port
     environment:
       COLLECTOR_OTLP_ENABLED: "true" # Enables/Disables OTLP Receiver
 
@@ -36,7 +36,7 @@ services:
       - "8889:8889"   # Prometheus exporter metrics
       - "13133:13133" # health_check extension
       - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP http receiver
+        #- "4318:4318"   # OTLP http receiver
       - "55679:55679" # zpages extension
     depends_on:
       - jaeger-all-in-one

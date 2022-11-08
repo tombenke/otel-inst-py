@@ -25,6 +25,7 @@ REQUIRES_PYTHON = ">=3.8"
 REQUIRED = [
     "opentelemetry-api",
     "opentelemetry-sdk",
+    "opentelemetry-exporter-otlp-proto-grpc",
     "opentelemetry-exporter-otlp-proto-http",
 ]
 
@@ -36,6 +37,7 @@ DEV_REQUIREMENTS = [
     "pylint",
     "pdoc",
     "pydeps",
+    "python-dotenv",
 ]
 
 setup(
