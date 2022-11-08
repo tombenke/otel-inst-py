@@ -133,7 +133,7 @@ The program also imports the OTEL API to demonstrate the usage of the tracing AP
 
 The results are written to the `stdout`.
 
-Execute the [simple_trace_stdout_env.py]() scrit:
+Execute the [`simple_trace_stdout_env.py`](simple_trace_stdout_env.py) script:
 
 ```bash
 python simple_trace_stdout_env.py 

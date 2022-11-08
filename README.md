@@ -50,7 +50,8 @@ with tracer.start_as_current_span("simple-trace-example") as span:
 oti.shutdown()
 ```
 
-Before exit, execute the `oti.shutdown()` that makes sure that the traces and metrics will surely be exported befor termination.
+Execute the `oti.shutdown()` during the shutdown process.
+It makes sure that the traces and metrics will surely be exported before termination.
 
 It is also possible to use envrionment variables to configure the `OTI()` class within the following variables:
 
