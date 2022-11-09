@@ -58,7 +58,7 @@ It is also possible to use envrionment variables to configure the `OTI()` class 
 - `OTEL_SERVICE_NAME`: The name of the service. default: `"UNDEFINED_SERVICE"`.
 - `OTEL_SERVICE_VERSION`: The version of the service. Default: `"UNDEFINED_SERVICE_VERSION"`.
 - `OTEL_SERVICE_NAMESPACE`: The service namespace. Default: `"UNDEFINED_SERVICE_NS"`.
-- `OTEL_EXPORTER_TYPE`:  The type of the exporter. One of: `"STDOUT" | "OTLPRPC | OTLPHTTP"`. Default: `"STDOUT"`.
+- `OTEL_EXPORTER_TYPE`:  The type of the exporter. One of: `"STDOUT" | "OTLPGRPC | OTLPHTTP"`. Default: `"STDOUT"`.
 - `OTEL_EXPORTER_URL`: The URL of the collector agent or service. Default: `"http://localhost:4317"`.
 - `OTEL_SPAN_PROCESSOR_TYPE`: The type of the span processor. One of: `"SIMPLE" | "BATCH"`. Default `"SIMPLE"`.
 - `OTEL_TRACES_SAMPLER`: The sampling type of tracing. One of: `"ALWAYS_OFF" | "ALWAYS_ON" | "TRACEIDRATIO" | "PARENTBASED" | "PARENTBASED_ALWAYS_OFF" | "PARENTBASED_ALWAYS_ON" | "PARENTBASED_TRACEIDRATIO"`. Default: `"PARENTBASED_ALWAYS_ON"`.
