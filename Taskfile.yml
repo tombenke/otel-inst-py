@@ -46,6 +46,8 @@ tasks:
       - cd examples && python simple_trace_stdout_env.py
       - cd examples && python simple_trace_stdout.py
       - cd examples && python simple_trace_stdout_wo_sdk.py
+      - cd examples && python simple_metrics_stdout_default_config.py
+      - cd examples && python simple_metrics_otlpgrpc.py
 
   test-verbose:
     desc: Run all the go tests.
@@ -166,4 +168,3 @@ tasks:
     desc: Create a new Python Virtual Environment under the local folder
     cmds:
       - python3.10 -m venv ./venv
-

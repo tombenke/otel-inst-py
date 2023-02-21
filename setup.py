@@ -22,11 +22,12 @@ LICENSE = "MIT"
 REQUIRES_PYTHON = ">=3.8"
 
 # What packages are required for this module to be executed?
+# Opentelemetry 1.16 is not working well with pyinstaller at the moment...
 REQUIRED = [
-    "opentelemetry-api",
-    "opentelemetry-sdk",
-    "opentelemetry-exporter-otlp-proto-grpc",
-    "opentelemetry-exporter-otlp-proto-http",
+    "opentelemetry-api < 1.16.0",
+    "opentelemetry-sdk < 1.16.0",
+    "opentelemetry-exporter-otlp-proto-grpc < 1.16.0",
+    "opentelemetry-exporter-otlp-proto-http < 1.16.0",
 ]
 
 DEV_REQUIREMENTS = [

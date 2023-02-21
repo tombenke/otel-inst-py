@@ -23,8 +23,8 @@ Instantiate the `OTI()` class either with the `OTIConfig()` configuration or via
 The following code shows the instrumentation using the config objects:
 
 ```python
-from opentelemetry import trace  # Import the OTEL API
-from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
+from opentelemetry import trace, metrics  # Import the OTEL API
+from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig, PeriodicMetricReaderConfig
 
 # Configure the OTEL SDK
 oti = OTI(
@@ -35,6 +35,7 @@ oti = OTI(
         service_version="v1.0.0",
         exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
         sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+        periodic_metric_reader_config=PeriodicMetricReaderConfig(1000),
     )
 )
 
@@ -46,6 +47,16 @@ with tracer.start_as_current_span("simple-trace-example") as span:
     print(f"TRACER / SPAN is executed: {TRACE_ID}")
     # When the 'with' block goes out of scope, 'span' is closed for you
 
+meter = metrics.get_meter(__name__)
+
+work_counter = meter.create_counter(
+    "work.counter", unit="1", description="Counts the amount of work done"
+)
+
+work_counter.add(1, {"work.type": "example"})
+
+
+
 # Shut down the OTEL SDK
 oti.shutdown()
 ```
@@ -53,7 +64,7 @@ oti.shutdown()
 Execute the `oti.shutdown()` during the shutdown process.
 It makes sure that the traces and metrics will surely be exported before termination.
 
-It is also possible to use envrionment variables to configure the `OTI()` class within the following variables:
+It is also possible to use environment variables to configure the `OTI()` class within the following variables:
 
 - `OTEL_SERVICE_NAME`: The name of the service. default: `"UNDEFINED_SERVICE"`.
 - `OTEL_SERVICE_VERSION`: The version of the service. Default: `"UNDEFINED_SERVICE_VERSION"`.
@@ -63,6 +74,8 @@ It is also possible to use envrionment variables to configure the `OTI()` class 
 - `OTEL_SPAN_PROCESSOR_TYPE`: The type of the span processor. One of: `"SIMPLE" | "BATCH"`. Default `"SIMPLE"`.
 - `OTEL_TRACES_SAMPLER`: The sampling type of tracing. One of: `"ALWAYS_OFF" | "ALWAYS_ON" | "TRACEIDRATIO" | "PARENTBASED" | "PARENTBASED_ALWAYS_OFF" | "PARENTBASED_ALWAYS_ON" | "PARENTBASED_TRACEIDRATIO"`. Default: `"PARENTBASED_ALWAYS_ON"`.
 - `OTEL_TRACES_SAMPLER_ARG`: It is used, of the `OTEL_TRACES_SAMPLER` config parameter has one of the `"...RATIO"` values. Default: `"1.0"`.
+- `OTEL_METRIC_EXPORT_INTERVAL_MILLIS`: It is used, to set the PeriodicExportingMetricReader config
+- `OTEL_METRIC_EXPORT_TIMEOUT_MILLIS`: It is used, to set the PeriodicExportingMetricReader config
 
 Read the [API docs](https://tombenke.github.io/otel-inst-py/) on the configuration,
 and see also the [examples](examples/) on the usage of this package.

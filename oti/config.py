@@ -15,6 +15,34 @@ DEFAULT_OTEL_SAMPLING_RATIO = "1.0"
 
 
 @dataclasses.dataclass
+class PeriodicMetricReaderConfig:
+    """The Constructor of exporter configuration class"""
+
+    export_interval_millis: str
+    export_timeout_millis: str
+
+    def __init__(
+        self,
+        export_interval_millis=None,
+        export_timeout_millis=None,
+    ):
+        """The Constructor of exporter configuration class"""
+        self.export_interval_millis = get_init_value(
+            export_interval_millis, None, "OTEL_METRIC_EXPORT_INTERVAL_MILLIS"
+        )
+        self.export_timeout_millis = get_init_value(
+            export_timeout_millis, None, "OTEL_METRIC_EXPORT_TIMEOUT_MILLIS"
+        )
+
+    def __str__(self):
+        """Serialize the object to string"""
+        return (
+            f'PeriodicMetricReaderConfig(export_interval_millis="{self.export_interval_millis}",'
+            f" export_timeout_millis={self.export_timeout_millis})"
+        )
+
+
+@dataclasses.dataclass
 class ExporterConfig:
     """The Constructor of exporter configuration class"""
 
@@ -98,6 +126,7 @@ class OTIConfig:
         span_processor_type=None,
         exporter_config=None,
         sampling_config=None,
+        periodic_metric_reader_config=None,
     ):
         """The Constructor of Open Telemetry Instrumentation configuration class"""
         self.service_name = get_init_value(
@@ -124,6 +153,10 @@ class OTIConfig:
         self.exporter_config = ExporterConfig()
         if exporter_config is not None:
             self.exporter_config = exporter_config
+
+        self.periodic_metric_reader_config = PeriodicMetricReaderConfig()
+        if periodic_metric_reader_config is not None:
+            self.periodic_metric_reader_config = periodic_metric_reader_config
 
     def __str__(self):
         """Serialize the object to string"""

@@ -66,11 +66,11 @@ class OTIConfigTestCase(unittest.TestCase):
         expected_service_name = "test-service"
         expected_traces_sampler = "always_off"
         expected_traces_sampler_arg = "0.01"
-        test_set_input = dict(
-            OTEL_SERVICE_NAME=expected_service_name,
-            OTEL_TRACES_SAMPLER=expected_traces_sampler,
-            OTEL_TRACES_SAMPLER_ARG=expected_traces_sampler_arg,
-        )
+        test_set_input = {
+            "OTEL_SERVICE_NAME": expected_service_name,
+            "OTEL_TRACES_SAMPLER": expected_traces_sampler,
+            "OTEL_TRACES_SAMPLER_ARG": expected_traces_sampler_arg,
+        }
         # Set the environment using the expected values
         os.environ.update(test_set_input)
 
