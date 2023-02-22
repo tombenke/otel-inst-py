@@ -1,6 +1,17 @@
 """The OTI class"""
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider, Resource
+from opentelemetry import metrics
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import (
+    OTLPMetricExporter as OTLPMetricExporterHttp,
+)
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import (
+    PeriodicExportingMetricReader,
+    ConsoleMetricExporter,
+)
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
     SimpleSpanProcessor,
     BatchSpanProcessor,
@@ -36,37 +47,64 @@ class OTI:
 
         # Create exporter(s)
         self.config = config
-        span_exporter = self.setup_exporter(config)
 
-        # Create a global Tracer Provider
-        self.setup_global_tracer_provider(config, span_exporter)
+        # Create Tracer Provider and set it as global default tracer provider
+        self.tracer_provider = self.create_tracer_provider(config)
+        trace.set_tracer_provider(self.tracer_provider)
+
+        # Create a Meter Provider and set it as global default meter provider
+        self.meter_provider = self.create_meter_provider(config)
+        metrics.set_meter_provider(self.meter_provider)
 
         # Creates a tracer from the global tracer provider
         self.tracer = trace.get_tracer(__name__)
 
-        # Create a global Meter Provider
-        # TO DO
+        # Creates a meter from global Meter Provider
+        self.meter = metrics.get_meter(__name__)
 
-    def setup_global_tracer_provider(self, config, span_exporter):
+    def create_tracer_provider(self, config):
         """Setup the global trace provider according to the config parameters"""
-        self.tracer_provider = TracerProvider(
+        span_exporter = self.setup_span_exporter(config)
+
+        tracer_provider = TracerProvider(
             self.setup_sampler(config.sampling_config),
             resource=Resource.create(
                 {
-                    "service.name": self.config.service_name,
-                    "service.namespace": self.config.service_namespace,
-                    "service.instance.id": self.config.service_instance_id,
-                    "service.version": self.config.service_version,
+                    "service.name": config.service_name,
+                    "service.namespace": config.service_namespace,
+                    "service.instance.id": config.service_instance_id,
+                    "service.version": config.service_version,
                 }
             ),
         )
 
-        self.tracer_provider.add_span_processor(
+        tracer_provider.add_span_processor(
             self.setup_span_processor(config, span_exporter)
         )
 
-        # Sets the global default tracer provider
-        trace.set_tracer_provider(self.tracer_provider)
+        return tracer_provider
+
+    def create_meter_provider(self, config):
+        """Setup the global meter provider according to the config parameters"""
+        reader = PeriodicExportingMetricReader(
+            self.setup_metric_exporter(config),
+            export_interval_millis=config.periodic_metric_reader_config.export_interval_millis,
+            export_timeout_millis=config.periodic_metric_reader_config.export_timeout_millis,
+        )
+
+        meter_provider = MeterProvider(
+            metric_readers=[reader],
+            resource=Resource.create(
+                {
+                    "service.name": config.service_name,
+                    "service.namespace": config.service_namespace,
+                    "service.instance.id": config.service_instance_id,
+                    "service.version": config.service_version,
+                }
+            ),
+        )
+
+        return meter_provider
 
     def setup_span_processor(self, config, span_exporter):
         """Setup the trace span processor according to the config parameters"""
@@ -77,11 +115,11 @@ class OTI:
         if span_processor_type == "SIMPLE":
             return SimpleSpanProcessor(span_exporter)
 
-        raise Exception(
+        raise OTIConfigError(
             f'Unknown OTEL span processor type: "{config.span_processor_type}"'
         )
 
-    def setup_exporter(self, config):
+    def setup_span_exporter(self, config):
         """Setup the exporter according to the config parameters"""
         exporter_type = config.exporter_config.exporter_type.upper()
         if exporter_type == "STDOUT":
@@ -93,7 +131,23 @@ class OTI:
         if exporter_type == "OTLPHTTP":
             return OTLPHTTPSpanExporter(endpoint=config.exporter_config.exporter_url)
 
-        raise Exception(
+        raise OTIConfigError(
+            f'Unknown OTEL span exporter type: "{config.exporter_config.exporter_type}"'
+        )
+
+    def setup_metric_exporter(self, config):
+        """Setup the exporter according to the config parameters"""
+        exporter_type = config.exporter_config.exporter_type.upper()
+        if exporter_type == "STDOUT":
+            return ConsoleMetricExporter()
+        if exporter_type == "OTLPGRPC":
+            return OTLPMetricExporter(
+                endpoint=config.exporter_config.exporter_url, insecure=True
+            )
+        if exporter_type == "OTLPHTTP":
+            return OTLPMetricExporterHttp(endpoint=config.exporter_config.exporter_url)
+
+        raise OTIConfigError(
             f'Unknown OTEL span exporter type: "{config.exporter_config.exporter_type}"'
         )
 
@@ -122,10 +176,18 @@ class OTI:
             # "traceidratio": TraceIdRatioBased
             return TraceIdRatioBased(sampling_config.trace_sampling_ratio)
 
-        raise Exception(
+        raise OTIConfigError(
             f'Unknown OTEL trace sampling type: "{sampling_config.trace_sampling_type}"'
         )
 
     def shutdown(self):
         """Shut down the OTEL instrumentation"""
         self.tracer_provider.shutdown()
+        self.meter_provider.shutdown()
+
+
+class OTIConfigError(Exception):
+    """Inappropriate argument value (of correct type)."""
+
+    def __init__(self, *args, **kwargs):  # real signature unknown
+        pass
