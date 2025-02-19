@@ -27,6 +27,7 @@ REQUIRED = [
     "opentelemetry-sdk < 1.31.0",
     "opentelemetry-exporter-otlp-proto-grpc < 1.31.0",
     "opentelemetry-exporter-otlp-proto-http < 1.31.0",
+    "opentelemetry-exporter-prometheus < 0.52.0",
 ]
 
 DEV_REQUIREMENTS = [
@@ -34,6 +35,7 @@ DEV_REQUIREMENTS = [
     "coverage",
     "coverage-badge",
     "black",
+    "httpx",
     "pylint",
     "pdoc",
     "pydeps",

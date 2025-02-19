@@ -35,6 +35,7 @@ oti = OTI(
         service_version="v1.0.0",
         exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
         sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+        metric_exporter_mode_config="PERIODIC",
         periodic_metric_reader_config=PeriodicMetricReaderConfig(1000),
     )
 )
@@ -74,8 +75,16 @@ It is also possible to use environment variables to configure the `OTI()` class 
 - `OTEL_SPAN_PROCESSOR_TYPE`: The type of the span processor. One of: `"SIMPLE" | "BATCH"`. Default `"SIMPLE"`.
 - `OTEL_TRACES_SAMPLER`: The sampling type of tracing. One of: `"ALWAYS_OFF" | "ALWAYS_ON" | "TRACEIDRATIO" | "PARENTBASED" | "PARENTBASED_ALWAYS_OFF" | "PARENTBASED_ALWAYS_ON" | "PARENTBASED_TRACEIDRATIO"`. Default: `"PARENTBASED_ALWAYS_ON"`.
 - `OTEL_TRACES_SAMPLER_ARG`: It is used, of the `OTEL_TRACES_SAMPLER` config parameter has one of the `"...RATIO"` values. Default: `"1.0"`.
+- `OTEL_METRIC_EXPORTER_MODE`:  The operating mechanism of the metric exporter. One of: `"ENDPOINT" | "PERIODIC" | "BOTH"`. Default: `"ENDPOINT"`.
+- `OTEL_METRIC_EXPORTER_ENDPOINT_ADDR`: The host part of the metric exporter endpoint. Default: `"localhost"`.
+- `OTEL_METRIC_EXPORTER_ENDPOINT_PORT`: The port part of the metric exporter endpoint. Default: `"9464"`.
 - `OTEL_METRIC_EXPORT_INTERVAL_MILLIS`: It is used, to set the PeriodicExportingMetricReader config
 - `OTEL_METRIC_EXPORT_TIMEOUT_MILLIS`: It is used, to set the PeriodicExportingMetricReader config
+
+The operating mechanism of the metric exporter can be set by the `OTEL_METRIC_EXPORTER_MODE` environment variable. 
+In case of `"PERIODIC"` the metrics are exported periodically, and the interval can be set by the `OTEL_METRIC_EXPORT_INTERVAL_MILLIS` variable.
+In case of `"ENDPOINT"` the metrics are exported to the endpoint defined by the `OTEL_METRIC_EXPORTER_ENDPOINT_ADDR` and `OTEL_METRIC_EXPORTER_ENDPOINT_PORT` variables.
+These two mechanisms can be combined by setting the `OTEL_METRIC_EXPORTER_MODE` to `"BOTH"`.
 
 Read the [API docs](https://tombenke.github.io/otel-inst-py/) on the configuration,
 and see also the [examples](examples/) on the usage of this package.
@@ -87,7 +96,7 @@ and see also the [examples](examples/) on the usage of this package.
 You will need the following tools installed on your machine:
 - bash
 - git
-- Python 3.10
+- Python 3.11
 - sed
 - [Task](https://taskfile.dev/)
 - docker, docker-compose

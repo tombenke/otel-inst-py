@@ -210,6 +210,7 @@ export OTEL_SERVICE_NAMESPACE=examples
 export OTEL_EXPORTER_TYPE=OTLPGRPC
 export OTEL_EXPORTER_URL = "http://localhost:4317"
 export OTEL_TRACES_SAMPLER=ALWAYS_ON
+export OTEL_METRIC_EXPORTER_MODE=PERIODIC
 ```
 
 The program also imports the OTEL gRPC API to demonstrate the usage of the tracing API.
@@ -247,6 +248,7 @@ export OTEL_SERVICE_NAMESPACE=examples
 export OTEL_EXPORTER_TYPE=OTLPHTTP
 export OTEL_EXPORTER_URL = "http://localhost:4318/v1/traces"
 export OTEL_TRACES_SAMPLER=ALWAYS_ON
+export OTEL_METRIC_EXPORTER_MODE=PERIODIC
 ```
 
 The program also imports the OTEL HTTP API to demonstrate the usage of the tracing API.

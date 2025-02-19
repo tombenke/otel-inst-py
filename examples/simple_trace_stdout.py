@@ -18,6 +18,7 @@ oti = OTI(
         service_version="v1.2.3",
         exporter_config=ExporterConfig(exporter_type="STDOUT"),
         sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+        metric_exporter_mode_config="PERIODIC",
     )
 )
 

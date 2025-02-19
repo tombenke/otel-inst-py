@@ -133,7 +133,6 @@ tasks:
       - rm docs/* -fr
       - rm dist/* -fr
 
-
   dc-up:
     desc: Start docker containers
     cmds:
