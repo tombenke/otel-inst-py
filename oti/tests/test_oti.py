@@ -82,21 +82,21 @@ class OtiTestCase(unittest.IsolatedAsyncioTestCase):
         log = logging.getLogger("LOG")
 
         service_name = "test_otelgrpc"
-        oti_config = OTIConfig(
-            service_name=service_name,
-            service_namespace="examples",
-            service_instance_id="stot_42",
-            service_version="v1.0.0",
-            exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
-            sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
-            metric_exporter_mode_config="BOTH",
-            periodic_metric_reader_config=PeriodicMetricReaderConfig(1000, 500),
-            metric_exporter_endpoint_config=MetricReaderEndpointConfig(
-                "localhost", "9464"
-            ),
+        oti = OTI(
+            OTIConfig(
+                service_name=service_name,
+                service_namespace="examples",
+                service_instance_id="stot_42",
+                service_version="v1.0.0",
+                exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
+                sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+                metric_exporter_mode_config="BOTH",
+                periodic_metric_reader_config=PeriodicMetricReaderConfig(1000, 500),
+                metric_exporter_endpoint_config=MetricReaderEndpointConfig(
+                    "localhost", "9464"
+                ),
+            )
         )
-
-        oti = OTI(oti_config)
 
         tracer = trace.get_tracer(__name__)
         with tracer.start_as_current_span("span-name") as span:
