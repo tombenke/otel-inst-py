@@ -112,7 +112,7 @@ tasks:
       - task: install-git-hooks
 
   install-dev-editable:
-    desc: Install the package and its dependencies for development with editablility
+    desc: Install the package and its dependencies for development with editability
     cmds:
       - pip install -e .[dev]
       - task: install-git-hooks

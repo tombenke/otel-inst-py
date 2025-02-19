@@ -68,8 +68,8 @@ class OtiTestCase(unittest.IsolatedAsyncioTestCase):
     """The OTI test cases"""
 
     async def test_oti(self) -> None:
-        """Test the OTI class with BOTH operating mode (PERIODIC and ENDPOINT in the same time)"""
-        # The different operating modes must be tested in the same time because the opentelemetry's set_meter_provider
+        """Test the OTI class with BOTH operating mode (PERIODIC and ENDPOINT at the same time)"""
+        # The different operating modes must be tested at the same time because the opentelemetry's set_meter_provider
         # method (which is responsible for setting the global default meter provider) can be called only once.
 
         logging.basicConfig(
