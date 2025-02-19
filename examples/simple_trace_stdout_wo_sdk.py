@@ -3,6 +3,7 @@ This example demonstrates that it is possible to instrument use OTEL tracing API
 The code runs correctly, but the OTEL has no any affect on the execution of the program.
 OTEL actually does nothing.
 """
+
 from opentelemetry import trace  # Import the OTEL API
 
 # Use the OTEL via API only

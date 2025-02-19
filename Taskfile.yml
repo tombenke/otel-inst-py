@@ -32,6 +32,7 @@ tasks:
     cmds:
       - task: format
       - task: dc-upd
+      - sleep 60  # Waiting for docker containers to start
       - python -m unittest discover ./oti/tests/
       - task: run_examples
       - task: dc-down

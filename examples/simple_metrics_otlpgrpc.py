@@ -15,6 +15,7 @@ docker-compose -f ../docker-compose.test.yml up
 After running this small code snippet, check Prometheus for your metrics:
 default: localhost:9090
 """
+
 from opentelemetry import metrics
 
 from oti import (

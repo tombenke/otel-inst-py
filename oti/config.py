@@ -1,4 +1,5 @@
 """The OTI configuration class"""
+
 import dataclasses
 import uuid
 import os

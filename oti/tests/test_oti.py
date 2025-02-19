@@ -1,4 +1,5 @@
 """Test the oti module"""
+
 import logging
 import unittest
 import time
@@ -9,24 +10,24 @@ from oti.config import PeriodicMetricReaderConfig
 
 
 def fetch_traces_by_service(service):
-    """Retrieve the trace from the Jaeger server selected by its trace_id"""
-
-    trace_url = f"http://localhost:16686/api/traces?service={service}&lookback=20m&prettyPrint=true&limit=1"
+    """Retrieve the traces from Tempo Traces Database through Grafana selected by its rootServiceName"""
+    trace_url = f"http://localhost:3000/api/datasources/proxy/uid/tempo/api/search?q=%7BrootServiceName%3D%22{service}%22%7D"
     num_of_retries = 4
     time_interval = 0.5
     for _ in range(num_of_retries):
         with requests.get(trace_url, timeout=1) as response:
-            content = response.json()
-            if content["errors"] is None and len(content["data"]) > 0:
-                return content
-            time.sleep(time_interval)
+            if response.status_code == 200:
+                content = response.json()
+                if len(content["traces"]) > 0:
+                    return content
+                print("Trace not found, waiting 0.5 sec...")
+                time.sleep(time_interval)
     return None
 
 
 def fetch_metric_by_service():
     """Retrieve the trace from the Jaeger server selected by its trace_id"""
-
-    prometheus_url = "http://localhost:9090/api/v1/query?query=promexample_work_counter"
+    prometheus_url = "http://localhost:3000/api/datasources/proxy/uid/prometheus/api/v1/query?query=work_counter_total"
     num_of_retries = 20
     time_interval = 1
     for _ in range(num_of_retries):
@@ -83,6 +84,7 @@ class OtiTestCase(unittest.TestCase):
 
         work_counter.add(1, {"work.type": "test"})
 
+        time.sleep(10)
         oti.shutdown()
 
         metric = fetch_metric_by_service()
@@ -91,5 +93,4 @@ class OtiTestCase(unittest.TestCase):
 
         traces = fetch_traces_by_service(service_name)
         log.debug(traces)
-        trace_0 = traces["data"][0]
-        self.assertEqual("span-name", trace_0["spans"][0]["operationName"])
+        self.assertEqual("span-name", traces["traces"][0]["rootTraceName"])

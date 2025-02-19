@@ -5,6 +5,7 @@ The program also imports the OTEL API to demonstrate the usage of the tracing AP
 
 The results are written to the `stdout`.
 """
+
 from opentelemetry import trace  # Import the OTEL API
 from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
 

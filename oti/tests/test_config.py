@@ -1,4 +1,5 @@
 """Test the oti module"""
+
 import unittest
 import os
 from oti import OTIConfig, ExporterConfig, SamplingConfig

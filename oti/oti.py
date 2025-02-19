@@ -1,4 +1,5 @@
 """The OTI class"""
+
 from opentelemetry import trace
 from opentelemetry import metrics
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter

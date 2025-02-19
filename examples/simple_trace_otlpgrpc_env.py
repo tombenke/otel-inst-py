@@ -14,6 +14,7 @@ in the project root folder before using this script:
 docker-compose -f ../docker-compose.test.yml up
 ```
 """
+
 # Load environment variables from .env if exists
 import dotenv
 

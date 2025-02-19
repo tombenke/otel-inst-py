@@ -12,6 +12,7 @@ in the project root folder before using this script:
 docker-compose -f ../docker-compose.test.yml up
 ```
 """
+
 from opentelemetry import trace  # Import the OTEL API
 from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
 

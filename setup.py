@@ -19,15 +19,14 @@ URL = "https://github.com/tombenke/otel-inst-py"
 EMAIL = "tombenke@gmail.com"
 AUTHOR = "Tamás Benke"
 LICENSE = "MIT"
-REQUIRES_PYTHON = ">=3.8"
+REQUIRES_PYTHON = ">=3.11"
 
 # What packages are required for this module to be executed?
-# Opentelemetry 1.16 is not working well with pyinstaller at the moment...
 REQUIRED = [
-    "opentelemetry-api < 1.16.0",
-    "opentelemetry-sdk < 1.16.0",
-    "opentelemetry-exporter-otlp-proto-grpc < 1.16.0",
-    "opentelemetry-exporter-otlp-proto-http < 1.16.0",
+    "opentelemetry-api < 1.31.0",
+    "opentelemetry-sdk < 1.31.0",
+    "opentelemetry-exporter-otlp-proto-grpc < 1.31.0",
+    "opentelemetry-exporter-otlp-proto-http < 1.31.0",
 ]
 
 DEV_REQUIREMENTS = [
@@ -62,7 +61,7 @@ setup(
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.11",
         "Development Status :: 4 - Beta",
         "Natural Language :: English",
         "Intended Audience :: Developers",
