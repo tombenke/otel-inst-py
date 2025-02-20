@@ -27,7 +27,7 @@ REQUIRED = [
     "opentelemetry-sdk < 1.31.0",
     "opentelemetry-exporter-otlp-proto-grpc < 1.31.0",
     "opentelemetry-exporter-otlp-proto-http < 1.31.0",
-    "opentelemetry-exporter-prometheus < 0.52.0",
+    "opentelemetry-exporter-prometheus == 0.51b0",
 ]
 
 DEV_REQUIREMENTS = [

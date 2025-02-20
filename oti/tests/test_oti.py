@@ -89,7 +89,9 @@ class OtiTestCase(unittest.IsolatedAsyncioTestCase):
                 service_instance_id="stot_42",
                 service_version="v1.0.0",
                 exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
-                sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+                sampling_config=SamplingConfig(
+                    trace_sampling_type="PARENTBASED_ALWAYS_ON"
+                ),
                 metric_exporter_mode_config="BOTH",
                 periodic_metric_reader_config=PeriodicMetricReaderConfig(1000, 500),
                 metric_exporter_endpoint_config=MetricReaderEndpointConfig(
