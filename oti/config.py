@@ -1,4 +1,5 @@
 """The OTI configuration class"""
+
 import dataclasses
 import uuid
 import os
@@ -12,6 +13,9 @@ DEFAULT_SPAN_PROCESSOR_TYPE = "SIMPLE"  # SIMPLE | BATCH
 # ALWAYS_OFF | ALWAYS_ON | TRACEIDRATIO | PARENTBASED | PARENTBASED_ALWAYS_OFF | PARENTBASED_ALWAYS_ON | PARENTBASED_TRACEIDRATIO
 DEFAULT_OTEL_SAMPLING_TYPE = "PARENTBASED_ALWAYS_ON"
 DEFAULT_OTEL_SAMPLING_RATIO = "1.0"
+DEFAULT_OTEL_METRIC_EXPORTER_MODE = "ENDPOINT"  # ENDPOINT | PERIODIC | BOTH
+DEFAULT_OTEL_METRIC_EXPORTER_ENDPOINT_ADDR = "localhost"
+DEFAULT_OTEL_METRIC_EXPORTER_ENDPOINT_PORT = "9464"
 
 
 @dataclasses.dataclass
@@ -39,6 +43,38 @@ class PeriodicMetricReaderConfig:
         return (
             f'PeriodicMetricReaderConfig(export_interval_millis="{self.export_interval_millis}",'
             f" export_timeout_millis={self.export_timeout_millis})"
+        )
+
+
+@dataclasses.dataclass
+class MetricReaderEndpointConfig:
+    """The Constructor of exporter configuration class"""
+
+    endpoint_addr: str
+    endpoint_port: str
+
+    def __init__(
+        self,
+        endpoint_addr=None,
+        endpoint_port=None,
+    ):
+        """The Constructor of exporter configuration class"""
+        self.endpoint_addr = get_init_value(
+            endpoint_addr,
+            DEFAULT_OTEL_METRIC_EXPORTER_ENDPOINT_ADDR,
+            "OTEL_METRIC_EXPORTER_ENDPOINT_ADDR",
+        )
+        self.endpoint_port = get_init_value(
+            endpoint_port,
+            DEFAULT_OTEL_METRIC_EXPORTER_ENDPOINT_PORT,
+            "OTEL_METRIC_EXPORTER_ENDPOINT_PORT",
+        )
+
+    def __str__(self):
+        """Serialize the object to string"""
+        return (
+            f'MetricReaderEndpointConfig(endpoint_addr="{self.endpoint_addr}",'
+            f" endpoint_port={self.endpoint_port})"
         )
 
 
@@ -126,6 +162,8 @@ class OTIConfig:
         span_processor_type=None,
         exporter_config=None,
         sampling_config=None,
+        metric_exporter_mode_config=None,
+        metric_exporter_endpoint_config=None,
         periodic_metric_reader_config=None,
     ):
         """The Constructor of Open Telemetry Instrumentation configuration class"""
@@ -154,9 +192,19 @@ class OTIConfig:
         if exporter_config is not None:
             self.exporter_config = exporter_config
 
+        self.metric_exporter_mode_config = get_init_value(
+            metric_exporter_mode_config,
+            DEFAULT_OTEL_METRIC_EXPORTER_MODE,
+            "OTEL_METRIC_EXPORTER_MODE",
+        )
+
         self.periodic_metric_reader_config = PeriodicMetricReaderConfig()
         if periodic_metric_reader_config is not None:
             self.periodic_metric_reader_config = periodic_metric_reader_config
+
+        self.metric_exporter_endpoint_config = MetricReaderEndpointConfig()
+        if metric_exporter_endpoint_config is not None:
+            self.metric_exporter_endpoint_config = metric_exporter_endpoint_config
 
     def __str__(self):
         """Serialize the object to string"""
@@ -165,5 +213,6 @@ class OTIConfig:
             f'service_name="{self.service_name}", '
             f'span_processor_type="{self.span_processor_type}", '
             f"exporter_config={self.exporter_config}), "
-            f"sampling_config={self.sampling_config})"
+            f"sampling_config={self.sampling_config}), "
+            f'metric_exporter_mode="{self.metric_exporter_mode_config}"'
         )

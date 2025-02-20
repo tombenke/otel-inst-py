@@ -32,6 +32,7 @@ tasks:
     cmds:
       - task: format
       - task: dc-upd
+      - sleep 60  # Waiting for docker containers to start
       - python -m unittest discover ./oti/tests/
       - task: run_examples
       - task: dc-down
@@ -111,7 +112,7 @@ tasks:
       - task: install-git-hooks
 
   install-dev-editable:
-    desc: Install the package and its dependencies for development with editablility
+    desc: Install the package and its dependencies for development with editability
     cmds:
       - pip install -e .[dev]
       - task: install-git-hooks
@@ -131,7 +132,6 @@ tasks:
       - rm htmlcov -fr
       - rm docs/* -fr
       - rm dist/* -fr
-
 
   dc-up:
     desc: Start docker containers

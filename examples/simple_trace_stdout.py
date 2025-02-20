@@ -5,6 +5,7 @@ The program also imports the OTEL API to demonstrate the usage of the tracing AP
 
 The results are written to the `stdout`.
 """
+
 from opentelemetry import trace  # Import the OTEL API
 from oti import OTI, OTIConfig, ExporterConfig, SamplingConfig
 
@@ -17,6 +18,7 @@ oti = OTI(
         service_version="v1.2.3",
         exporter_config=ExporterConfig(exporter_type="STDOUT"),
         sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+        metric_exporter_mode_config="PERIODIC",
     )
 )
 

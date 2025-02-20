@@ -15,6 +15,7 @@ docker-compose -f ../docker-compose.test.yml up
 After running this small code snippet, check Prometheus for your metrics:
 default: localhost:9090
 """
+
 from opentelemetry import metrics
 
 from oti import (
@@ -35,6 +36,7 @@ oti = OTI(
         service_version="v1.0.0",
         exporter_config=ExporterConfig(exporter_type="OTLPGRPC"),
         sampling_config=SamplingConfig(trace_sampling_type="PARENTBASED_ALWAYS_ON"),
+        metric_exporter_mode_config="PERIODIC",
         periodic_metric_reader_config=PeriodicMetricReaderConfig(1000, 1000),
     )
 )

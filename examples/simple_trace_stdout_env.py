@@ -7,6 +7,7 @@ The program also imports the OTEL API to demonstrate the usage of the tracing AP
 
 The results are written to the `stdout`.
 """
+
 # Load environment variables from .env if exists
 import dotenv
 

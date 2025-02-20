@@ -1,6 +1,7 @@
 """
 This example uses the tracing API and instruments the OTI with the default config values.
 """
+
 from opentelemetry import trace  # Import the OTEL API
 from oti import OTI
 

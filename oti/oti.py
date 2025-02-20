@@ -1,4 +1,5 @@
 """The OTI class"""
+
 from opentelemetry import trace
 from opentelemetry import metrics
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
@@ -30,6 +31,8 @@ from opentelemetry.sdk.trace.sampling import (
     ParentBased,
     TraceIdRatioBased,
 )
+from opentelemetry.exporter.prometheus import PrometheusMetricReader
+from prometheus_client import start_http_server
 from .config import OTIConfig
 
 
@@ -47,6 +50,7 @@ class OTI:
 
         # Create exporter(s)
         self.config = config
+        self.metric_server, self.ms_thread = None, None
 
         # Create Tracer Provider and set it as global default tracer provider
         self.tracer_provider = self.create_tracer_provider(config)
@@ -86,14 +90,29 @@ class OTI:
 
     def create_meter_provider(self, config):
         """Setup the global meter provider according to the config parameters"""
-        reader = PeriodicExportingMetricReader(
+        readers = []
+        reader_periodic = PeriodicExportingMetricReader(
             self.setup_metric_exporter(config),
             export_interval_millis=config.periodic_metric_reader_config.export_interval_millis,
             export_timeout_millis=config.periodic_metric_reader_config.export_timeout_millis,
         )
 
+        reader_endpoint = PrometheusMetricReader()
+        if config.metric_exporter_mode_config == "PERIODIC":
+            readers = [reader_periodic]
+        elif config.metric_exporter_mode_config == "ENDPOINT":
+            readers.append(reader_endpoint)
+            self.start_metric_server(config)
+        elif config.metric_exporter_mode_config == "BOTH":
+            readers = [reader_periodic, reader_endpoint]
+            self.start_metric_server(config)
+        else:
+            raise NotImplementedError(
+                "Only PERIODIC, ENDPOINT and BOTH modes are supported"
+            )
+
         meter_provider = MeterProvider(
-            metric_readers=[reader],
+            metric_readers=readers,
             resource=Resource.create(
                 {
                     "service.name": config.service_name,
@@ -105,6 +124,19 @@ class OTI:
         )
 
         return meter_provider
+
+    def start_metric_server(self, config):
+        """Start the metric server. The metrics can be queried via the endpoint specified in the config"""
+        endpoint_config = config.metric_exporter_endpoint_config
+        self.metric_server, self.ms_thread = start_http_server(
+            port=int(endpoint_config.endpoint_port), addr=endpoint_config.endpoint_addr
+        )
+
+    def shutdown_metric_server(self):
+        """Shut down the metric server"""
+        if self.metric_server:
+            self.metric_server.shutdown()
+            self.ms_thread.join()
 
     def setup_span_processor(self, config, span_exporter):
         """Setup the trace span processor according to the config parameters"""
@@ -182,6 +214,7 @@ class OTI:
 
     def shutdown(self):
         """Shut down the OTEL instrumentation"""
+        self.shutdown_metric_server()
         self.tracer_provider.shutdown()
         self.meter_provider.shutdown()
 
