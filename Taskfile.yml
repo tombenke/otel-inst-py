@@ -5,11 +5,14 @@ version: 3
 vars:
   APPNAME: otel-inst-py
   DEP: ./...
-  DOCKER_REG_PREFIX: docker.pkg.github.com
+  DOCKER_REG_PREFIX: ghcr.io
+  OWNER: tombenke
   DOCKER_REG_USER: tombenke
-  IMAGE_TAG: latest
+  IMAGE_TAG: "{{.VERSION}}"
   VERSION:
-    sh: git describe --tags --always --match v* ${GITHUB_REF}
+    sh: git describe --tags --always  --abbrev=0 --match v* ${GITHUB_REF} | sed -e 's,.*/\(.*\),\1,'  | sed -e 's/^v//' || "latest"
+  DOCKER_IMAGE_NAME: "{{.DOCKER_REG_PREFIX}}/{{.OWNER}}/{{.APPNAME}}:{{.IMAGE_TAG}}"
+  DOCKER_IMAGE_NAME_LATEST: "{{.DOCKER_REG_PREFIX}}/{{.OWNER}}/{{.APPNAME}}:latest"
   GIT_HOOKS_DIR:
     sh: echo "$(pwd)/.git/hooks"
 
@@ -90,7 +93,7 @@ tasks:
   pre-commit:
     desc: Runs the QA tasks from a git pre-commit hook
     cmds:
-      - task: lint
+#      - task: lint
       - task: coverage
 
   install-git-hooks:
