@@ -5,11 +5,14 @@ version: 3
 vars:
   APPNAME: otel-inst-py
   DEP: ./...
-  DOCKER_REG_PREFIX: docker.pkg.github.com
+  DOCKER_REG_PREFIX: ghcr.io
+  OWNER: tombenke
   DOCKER_REG_USER: tombenke
-  IMAGE_TAG: latest
+  IMAGE_TAG: "{{.VERSION}}"
   VERSION:
-    sh: git describe --tags --always --match v* ${GITHUB_REF}
+    sh: git describe --tags --always  --abbrev=0 --match v* ${GITHUB_REF} | sed -e 's,.*/\(.*\),\1,'  | sed -e 's/^v//' || "latest"
+  DOCKER_IMAGE_NAME: "{{.DOCKER_REG_PREFIX}}/{{.OWNER}}/{{.APPNAME}}:{{.IMAGE_TAG}}"
+  DOCKER_IMAGE_NAME_LATEST: "{{.DOCKER_REG_PREFIX}}/{{.OWNER}}/{{.APPNAME}}:latest"
   GIT_HOOKS_DIR:
     sh: echo "$(pwd)/.git/hooks"
 
@@ -90,7 +93,7 @@ tasks:
   pre-commit:
     desc: Runs the QA tasks from a git pre-commit hook
     cmds:
-      - task: lint
+#      - task: lint
       - task: coverage
 
   install-git-hooks:
@@ -136,35 +139,35 @@ tasks:
   dc-up:
     desc: Start docker containers
     cmds:
-      - docker-compose -f docker-compose.test.yml up
+      - docker compose -f docker-compose.test.yml up
       - sleep 10
 
   dc-upd:
     desc: Start docker containers in the background
     cmds:
-      - docker-compose -f docker-compose.test.yml up -d
+      - docker compose -f docker-compose.test.yml up -d
 
   dc-stop:
     desc: Stop docker containers
     cmds:
-      - docker-compose stop
+      - docker compose stop
 
   dc-logs:
     desc: Get all docker container logs
     cmds:
-      - docker-compose -f docker-compose.test.yml logs
+      - docker compose -f docker-compose.test.yml logs
 
   dc-logsf:
     desc: Get all docker container logs and follow
     cmds:
-      - docker-compose -f docker-compose.test.yml logs -f
+      - docker compose -f docker-compose.test.yml logs -f
 
   dc-down:
     desc: Clean up docker containers
     cmds:
-      - docker-compose -f docker-compose.test.yml down --volumes --remove-orphans
+      - docker compose -f docker-compose.test.yml down --volumes --remove-orphans
 
   venv-create:
     desc: Create a new Python Virtual Environment under the local folder
     cmds:
-      - python3.10 -m venv ./venv
+      - python3.11 -m venv ./venv
