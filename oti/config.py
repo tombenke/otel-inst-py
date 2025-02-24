@@ -165,7 +165,7 @@ class OTIConfig:
         metric_exporter_mode_config=None,
         metric_exporter_endpoint_config=None,
         periodic_metric_reader_config=None,
-    ):
+    ):  # pylint: disable=too-many-positional-arguments
         """The Constructor of Open Telemetry Instrumentation configuration class"""
         self.service_name = get_init_value(
             service_name, DEFAULT_SERVICE_NAME, "OTEL_SERVICE_NAME"
