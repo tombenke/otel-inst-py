@@ -15,15 +15,15 @@ from oti.config import PeriodicMetricReaderConfig, MetricReaderEndpointConfig
 def fetch_traces_by_service(service):
     """Retrieve the traces from Tempo Traces Database through Grafana selected by its rootServiceName"""
     trace_url = f"http://localhost:3000/api/datasources/proxy/uid/tempo/api/search?q=%7BrootServiceName%3D%22{service}%22%7D"
-    num_of_retries = 4
-    time_interval = 0.5
+    num_of_retries = 10
+    time_interval = 1
     for _ in range(num_of_retries):
         with requests.get(trace_url, timeout=1) as response:
             if response.status_code == 200:
                 content = response.json()
                 if len(content["traces"]) > 0:
                     return content
-                print("Trace not found, waiting 0.5 sec...")
+                print("Trace not found, waiting 1 sec...")
                 time.sleep(time_interval)
     return None
 

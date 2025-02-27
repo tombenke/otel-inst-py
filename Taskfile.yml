@@ -15,6 +15,9 @@ vars:
   DOCKER_IMAGE_NAME_LATEST: "{{.DOCKER_REG_PREFIX}}/{{.OWNER}}/{{.APPNAME}}:latest"
   GIT_HOOKS_DIR:
     sh: echo "$(pwd)/.git/hooks"
+# For wait-for-docker-run task
+  CONTAINER_NAME: docker-otel-lgtm
+  LOG_ENTRY: "The OpenTelemetry collector and the Grafana LGTM stack are up and running"
 
 env:
 
@@ -35,7 +38,7 @@ tasks:
     cmds:
       - task: format
       - task: dc-upd
-      - sleep 60  # Waiting for docker containers to start
+      - task: wait-for-docker-run
       - python -m unittest discover ./oti/tests/
       - task: run_examples
       - task: dc-down
@@ -57,7 +60,7 @@ tasks:
     desc: Run all the go tests.
     cmds:
       - task: dc-upd
-      - sleep 60  # Waiting for docker containers to start
+      - task: wait-for-docker-run
       - task: format
       - python -m unittest discover ./oti/tests/ -v
       - task: dc-down
@@ -66,7 +69,7 @@ tasks:
     desc: Test coverage
     cmds:
       - task: dc-upd
-      - sleep 60  # Waiting for docker containers to start
+      - task: wait-for-docker-run
       - coverage run -m unittest discover ./oti/tests/ -v
       - coverage html
       - coverage report
@@ -127,7 +130,7 @@ tasks:
     cmds:
       - echo {{.VERSION}}
       - task: dc-upd
-      - sleep 60  # Waiting for docker containers to start
+      - task: wait-for-docker-run
       - pdoc -o docs -d google oti/ examples/ --footer-text="otel-inst-py/oti {{.VERSION}}"
       - task: dc-down
 
@@ -143,7 +146,6 @@ tasks:
     desc: Start docker containers
     cmds:
       - docker compose -f docker-compose.test.yml up
-      - sleep 10
 
   dc-upd:
     desc: Start docker containers in the background
@@ -174,3 +176,17 @@ tasks:
     desc: Create a new Python Virtual Environment under the local folder
     cmds:
       - python3.11 -m venv ./venv
+
+  wait-for-docker-run:
+    desc: Waiting for the docker container is ready to use, a specific log entry to appear in the Docker logs
+    cmds:
+      - |
+        while true; do
+          if docker logs {{.CONTAINER_NAME}} 2>&1 | grep -q "^{{.LOG_ENTRY}}"; then
+            echo "Container '{{.CONTAINER_NAME}}' is ready to use"
+            break
+          else
+            echo "Waiting for container '{{.CONTAINER_NAME}}' to start up..."
+            sleep 5
+          fi
+        done
